@@ -18,8 +18,9 @@ const PEN_PALETTE = [ // subset of IBM colorblind palette
   '#000000', // final color
 ]
 
+// firefox and chrome incompatibility lives here
 let isHand = touchEvent =>
-  touchEvent.force === 1 // firefox and chrome incompatibility lives here
+  touchEvent.force === 1 && touchEvent.rotationAngle === 0
 
 let decks = [
   {
@@ -95,7 +96,6 @@ function Form({ fpsize, fpx, fpy, lines, setLines, move, currentIteration }) {
   }
   let _line = lines[lines.length - 1]
   let points = _line && _line.points || []
-  console.log(22, points.length)
 
   let started = e => {
     let touches = e.changedTouches
@@ -138,7 +138,6 @@ function Form({ fpsize, fpx, fpy, lines, setLines, move, currentIteration }) {
         if (i === 0) ctx.moveTo(p.x, p.y)
         else ctx.lineTo(p.x, p.y)
       })
-      console.log(points.length, color)
       ctx.strokeStyle = color
       ctx.shadowColor = 'white'
       ctx.shadowBlur = 3
@@ -292,7 +291,6 @@ function App() {
     if (!isHand(t)) return
     clearLines()
     prevStep = step
-    console.log(111, step)
     if (step === STEP.MENU) setStep(prevStep)
     else setStep(STEP.MENU)
   }

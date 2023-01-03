@@ -27,5 +27,6 @@ Target audience:
 
 # But
 
-- use a tablet in portrait mode and firefox
+- use a android tablet in portrait mode and firefox
+- android browsers are not smart about stylus now so the app will miss moves that use full force with right angle to the screen
 - happy path is the only path
