@@ -184,7 +184,7 @@ draw radius, sectors
 
 BEGIN {
   $have_grid = false
-  $bezier = true
+  $bezier = false
   $cubic_bezier = true
   $colors = 7
   $min_percent = 7
