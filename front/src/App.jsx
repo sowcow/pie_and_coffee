@@ -9,6 +9,14 @@ import { useCallback } from 'react'
 import { useSwipeable } from 'react-swipeable'
 
 const BASE_URL = '/pie_and_coffee'
+const PEN_PALETTE = [ // subset of IBM colorblind palette
+  'placeholder', 
+  '#648FFF', // two blues
+  '#785EF0',
+  '#FFB000', // two oranges
+  '#FE6100',
+  '#000000', // final color
+]
 
 let isHand = touchEvent =>
   touchEvent.force === 1 // firefox and chrome incompatibility lives here
@@ -70,7 +78,7 @@ function Img({ psize, px, py, file }) {
   }} />
 }
 
-function Form({ fpsize, fpx, fpy, lines, setLines, move }) {
+function Form({ fpsize, fpx, fpy, lines, setLines, move, currentIteration }) {
   let w = useWindowSize()
 
   let wsize = Math.min(w.width, w.height)
@@ -80,8 +88,14 @@ function Form({ fpsize, fpx, fpy, lines, setLines, move }) {
 
   let ref = useRef()
 
-  let setPoints = xs => setLines(lines.slice(0, lines.length - 1).concat([xs]))
-  let points = lines[lines.length - 1] || []
+  let addPoint = x => {
+    let line = lines[lines.length - 1]
+    line.points.push(x) // so what
+    setLines(lines.slice(0, lines.length - 1).concat({ ...line }))
+  }
+  let _line = lines[lines.length - 1]
+  let points = _line && _line.points || []
+  console.log(22, points.length)
 
   let started = e => {
     let touches = e.changedTouches
@@ -90,7 +104,7 @@ function Form({ fpsize, fpx, fpy, lines, setLines, move }) {
       if (isHand(t)) return
       let x = t.clientX
       let y = t.clientY
-      setLines(lines.concat([[{ x, y }]]))
+      setLines(lines.concat([{ points: [{ x, y }], color: PEN_PALETTE[currentIteration] }]))
     })
   }
 
@@ -100,7 +114,7 @@ function Form({ fpsize, fpx, fpy, lines, setLines, move }) {
       if (isHand(t)) return
       let x = t.clientX
       let y = t.clientY
-      setPoints(points.concat({ x, y }))
+      addPoint({x, y})
     })
   }
 
@@ -117,17 +131,20 @@ function Form({ fpsize, fpx, fpy, lines, setLines, move }) {
 		ctx.stroke()
     ctx.closePath()
 
-    ctx.beginPath()
-    lines.forEach(points => {
+    lines.forEach(({points, color}) => {
+      ctx.beginPath()
+      ctx.lineWidth = 2
       points.forEach((p, i) => {
         if (i === 0) ctx.moveTo(p.x, p.y)
         else ctx.lineTo(p.x, p.y)
       })
+      console.log(points.length, color)
+      ctx.strokeStyle = color
+      ctx.shadowColor = 'white'
+      ctx.shadowBlur = 3
+      ctx.stroke()
+      ctx.closePath()
     })
-    ctx.strokeStyle = 'navy'
-    ctx.lineWidth = 2
-		ctx.stroke()
-    ctx.closePath()
   }, [ref.current, lines.length, points.length])
 
   return <canvas width={w.width} height={w.height} style={{
@@ -157,7 +174,7 @@ let Menu = ({ goDeck, iterations, setIterations }) => {
       Iterations:
       <input type='number'
         min={1}
-        max={9}
+        max={5}
         value={iterations}
         onChange={e => setIterations(parseInt(e.target.value))}
         style={{
@@ -260,7 +277,7 @@ function App() {
       setStep(STEP.SEE)
     }
   }
-  let formParams = { fpsize, fpx, fpy, lines, setLines, move }
+  let formParams = { fpsize, fpx, fpy, lines, setLines, move, currentIteration }
 
   let moveAction = e => {
     let touches = e.event.changedTouches
