@@ -8,6 +8,8 @@ import { useCallback } from 'react'
 
 import { useSwipeable } from 'react-swipeable'
 
+const BASE_URL = '/pie_and_coffee'
+
 let isHand = touchEvent =>
   touchEvent.force === 1 // firefox and chrome incompatibility lives here
 
@@ -47,7 +49,7 @@ decks.forEach(x => {
 })
 
 let filesFor = name => {
-  let files = _.times(100, i => `/${name}/${i+1}.png`)
+  let files = _.times(100, i => `${BASE_URL}/${name}/${i+1}.png`)
   return _.shuffle(files)
 }
 
