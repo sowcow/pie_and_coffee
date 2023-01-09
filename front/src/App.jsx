@@ -31,10 +31,10 @@ let decks = [
     id: '5line',
     name: 'Five Linear',
   },
-  //{
-  //  id: '7',
-  //  name: 'Seven Linear',
-  //},
+  {
+    id: '7line',
+    name: 'Seven Linear',
+  },
   {
     id: '5quadratic',
     name: 'Five Quadratic',
